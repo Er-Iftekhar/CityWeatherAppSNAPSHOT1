@@ -31,7 +31,7 @@ import java.util.List;
 
 public class Tab2Fragment extends Fragment {
     private static final String TAG="Tab2Fragment";
-    private Button button;
+//    private Button button;
     private static  final String CITY_NAME_SEARCHED="cityNameSearched";
     private ArrayList<String> historyList;
     private ListView historyListView;
@@ -55,7 +55,7 @@ public Tab2Fragment(){
 
         View view=inflater.inflate(R.layout.tab2_frag, container, false);
         historyListView=view.findViewById(R.id.historyList);
-        button=view.findViewById(R.id.getWeatherButton);
+//        button=view.findViewById(R.id.getWeatherButton);
         historyDatabase=HistoryDatabase.getInstance(getActivity());
         sqLiteDatabase=historyDatabase.sqLiteDatabase;
         arrayAdapter=historyDatabase.arrayAdapter;

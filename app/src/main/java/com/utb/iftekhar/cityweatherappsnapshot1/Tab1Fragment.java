@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,12 +41,14 @@ public class Tab1Fragment extends Fragment{
     private EditText searchCityByName;
     private TextView weatherResultTextView=null;
     private DownloadTask downloadTask;
+    private ImageDownloadTask imageDownloadTask;
     private String weatherResults;
-
+    private ImageView imageView;
     private String cityNameSearched;
     HistoryDatabase historyDatabase;
     SQLiteStatement statement;
     private SQLiteDatabase sqLiteDatabase;
+
 
     public Tab1Fragment(){
         Log.i("Tab1Fragmrnt","called");
@@ -56,26 +60,45 @@ public class Tab1Fragment extends Fragment{
         getWeatherButton=(Button)view.findViewById(R.id.getWeatherButton);
         searchCityByName=(EditText)view.findViewById(R.id.searchCityByName);
         weatherResultTextView=(TextView)view.findViewById(R.id.weatherResult);
+        imageView=(ImageView)view.findViewById(R.id.iconView);
         mainActivity=new MainActivity();
         historyDatabase=HistoryDatabase.getInstance(getActivity());
         sqLiteDatabase=historyDatabase.sqLiteDatabase;
+
         getWeatherButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 downloadTask=new DownloadTask(new DownloadTask.AsyncResponse() {
 
                     @Override
-                    public void processFinish(String output) {
-
+                    public void processFinish(String output, String iconString) {
+                        String iconCode="";
                         if(!output.equals("")){
                             weatherResultTextView.setText(output);
+                            imageView.setImageBitmap(null);
+                            if(!"".equals(iconString)){
+                                iconCode=iconString;
+                            }
+                            imageDownloadTask.execute("https://openweathermap.org/img/wn/"+iconCode+"@2x.png");
                         }else{
                             weatherResultTextView.setText("");
                         }
                         historyDatabase.updateListView();
                     }
-
                 });
+
+
+
+                imageDownloadTask=new ImageDownloadTask(new ImageDownloadTask.Listener() {
+                    @Override
+                    public void onImageLoaded(Bitmap bitmap) {
+                        if(bitmap!=null)
+                        {
+                            imageView.setImageBitmap(bitmap);
+                        }
+                    }
+                });
+
 
                 cityNameSearched=searchCityByName.getText().toString().trim();
                 historyDatabase.insertHistory(cityNameSearched);
@@ -87,19 +110,13 @@ public class Tab1Fragment extends Fragment{
                     String encodedCityName= URLEncoder.encode(cityNameSearched,"UTF-8" );
 //                    downloadTask.execute("https://openweathermap.org/data/2.5/weather?q="+encodedCityName+"&appid=5a4e565cd06d9f08c34f6a7237b2e240");
                     downloadTask.execute("https://openweathermap.org/data/2.5/weather?q="+encodedCityName+"&appid=439d4b804bc8187953eb36d2a8c26a02");
-
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-
-
-
                 InputMethodManager mgr=(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                 mgr.hideSoftInputFromWindow(searchCityByName.getWindowToken(), 0);
-
             }
         });
         return view;
     }
-
 }

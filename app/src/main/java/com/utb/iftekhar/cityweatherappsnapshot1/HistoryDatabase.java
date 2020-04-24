@@ -25,21 +25,27 @@ public class HistoryDatabase {
 
     private HistoryDatabase(Context context){
         this.context=context;
+//        internal storage, specific to app, to instantiate a cursor when query is called
         sqLiteDatabase=context.openOrCreateDatabase("History", MODE_PRIVATE,null);
-        Log.i(" HistryDatbase created ",sqLiteDatabase.toString());
+        //In order to display items in the list, call setAdapter
+        // to associate an adapter with the list
         historyList=new ArrayList<>();
         arrayAdapter=new ArrayAdapter<String>(context,R.layout.rows,historyList);
     }
 
     public void updateListView() {
+        //Runs the provided SQL and returns a Cursor over the result set, arguments in where clause.
         Cursor c = sqLiteDatabase.rawQuery("SELECT * FROM history", null);
+//        Returns the zero-based index for the given column name,
+//          or -1 if the column doesn't exist.
         int searchIndex = c.getColumnIndex("search");
         if (c.moveToFirst()) {
             historyList.clear();
             do {
                 historyList.add(c.getString(searchIndex));
             } while (c.moveToNext());
-
+//            Notifies the attached observers that the underlying data
+//          has been changed and any View reflecting the data set should refresh itself.
             arrayAdapter.notifyDataSetChanged();
         }
     }
@@ -51,6 +57,7 @@ public class HistoryDatabase {
     public void insertHistory(String search){
         String insertHistory="INSERT INTO history(search) VALUES(?)";
         if(!historyList.contains(search) && !search.equals("")){
+//            Compiles an SQL statement into a reusable pre-compiled statement object.
             statement=sqLiteDatabase.compileStatement(insertHistory);
             statement.bindString(1,search);
             statement.execute();
@@ -65,6 +72,7 @@ public class HistoryDatabase {
         statement.execute();
         updateListView();
     }
+
 
     public static HistoryDatabase getInstance(Context context){
         if(historyDatabase==null){

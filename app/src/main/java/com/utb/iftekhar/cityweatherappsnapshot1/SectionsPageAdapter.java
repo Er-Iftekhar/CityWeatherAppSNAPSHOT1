@@ -13,13 +13,16 @@ import java.util.List;
 
 public class SectionsPageAdapter extends FragmentPagerAdapter {
 
+    //These two lists are created to maintain the fragments and their titles.
     List<Fragment> myFragmentList=new ArrayList<>();
     List<String> myFragmentTitleList=new ArrayList<>();
 
+    //Default constructor
     public SectionsPageAdapter(FragmentManager fm) {
         super(fm);
     }
 
+    //Custom method to add fragments and titles to the layout
     public void addFragment(Fragment fragment, String title){
         myFragmentList.add(fragment);
         myFragmentTitleList.add(title);

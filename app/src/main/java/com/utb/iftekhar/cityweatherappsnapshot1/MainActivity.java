@@ -15,14 +15,11 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG="MainActivity";
     private SectionsPageAdapter mySectionPageAdapter;
     private ViewPager viewPager;
-//    private DataForTabs dataForTabs;
     private Tab1Fragment tab1Fragment;
     static Tab2Fragment tab2Fragment;
     String input="";
-    public static SharedPreferences sharedPreferences;
-    static  ArrayList<String> arrayList=new ArrayList<>();
-    SharedPreferences.Editor editor;
-    Button button;
+
+
     public static SQLiteDatabase sqLiteDatabase;
    static HistoryDatabase historyDatabase;
     private static final int NUM_PAGES = 3;
